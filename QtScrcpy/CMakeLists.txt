@@ -380,3 +380,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${LINK_LIBS}
     QtScrcpyCore
 )
+
+install(TARGETS QtScrcpy)
+install(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/sndcpy/sndcpy.sh"
+    "${CMAKE_CURRENT_SOURCE_DIR}/sndcpy/sndcpy.apk"
+    DESTINATION share/QtScrcpy
+)
+install(PROGRAMS
+    "${CMAKE_CURRENT_SOURCE_DIR}/QtScrcpyCore/src/third_party/scrcpy-server"
+    DESTINATION share/QtScrcpy
+)
