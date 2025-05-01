@@ -5,7 +5,9 @@
 #include <QRandomGenerator>
 #include <QTime>
 #include <QTimer>
-
+#include <QStandardPaths>
+#include <QFileInfo>
+#include <QCoreApplication>
 #include "config.h"
 #include "dialog.h"
 #include "ui_dialog.h"
@@ -743,7 +745,18 @@ quint32 Dialog::getBitRate()
     return ui->bitRateEdit->text().trimmed().toUInt() *
             (ui->bitRateBox->currentText() == QString("Mbps") ? 1000000 : 1000);
 }
-
+QString tryFindScrcpyServer()
+{
+    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    for (auto &dir : paths) {
+                QString serverPath = dir + "/scrcpy-server";
+        if (QFileInfo::exists(serverPath))
+            return serverPath;
+    }
+    // fallback
+    QString fallback = QCoreApplication::applicationDirPath() + "/scrcpy-server";
+    return fallback;
+}
 const QString &Dialog::getServerPath()
 {
     static QString serverPath;
@@ -751,7 +764,7 @@ const QString &Dialog::getServerPath()
         serverPath = QString::fromLocal8Bit(qgetenv("QTSCRCPY_SERVER_PATH"));
         QFileInfo fileInfo(serverPath);
         if (serverPath.isEmpty() || !fileInfo.isFile()) {
-            serverPath = QCoreApplication::applicationDirPath() + "/scrcpy-server";
+            serverPath = tryFindScrcpyServer();
         }
     }
     return serverPath;

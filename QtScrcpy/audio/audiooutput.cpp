@@ -3,7 +3,9 @@
 #include <QAudioOutput>
 #include <QTime>
 #include <QElapsedTimer>
-
+#include <QStandardPaths>
+#include <QFileInfo>
+#include <QCoreApplication>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 #include <QAudioSink>
 #include <QAudioDevice>
@@ -73,6 +75,23 @@ void AudioOutput::installonly(const QString &serial, int port)
 {
     runSndcpyProcess(serial, port, false);
 }
+#ifdef Q_OS_WIN32
+#else
+QString tryFindSndcpy()
+{
+    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    for (auto &dir : paths) {
+        QString serverPath = dir + "/sndcpy.sh";
+        if (QFileInfo::exists(serverPath))
+            return serverPath;
+    }
+    // fallback
+    QString fallback = QCoreApplication::applicationDirPath() + "/sndcpy.sh";
+    return fallback;
+}
+#endif
+
+
 
 bool AudioOutput::runSndcpyProcess(const QString &serial, int port, bool wait)
 {
@@ -82,9 +101,9 @@ bool AudioOutput::runSndcpyProcess(const QString &serial, int port, bool wait)
 
 #ifdef Q_OS_WIN32
     QStringList params{serial, QString::number(port)};
-    m_sndcpy.start("sndcpy.bat", params);
+    m_sndcpy.start(tryFindSndcpy(), params);
 #else
-    QStringList params{"sndcpy.sh", serial, QString::number(port)};
+    QStringList params{tryFindSndcpy(), serial, QString::number(port)};
     m_sndcpy.start("bash", params);
 #endif
 
