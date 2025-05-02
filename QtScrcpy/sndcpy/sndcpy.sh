@@ -2,7 +2,7 @@
 
 echo Begin Runing...
 SNDCPY_PORT=28200
-SNDCPY_APK=sndcpy.apk
+SNDCPY_APK=/usr/share/QtScrcpy/sndcpy.apk
 ADB=adb
 
 serial=
