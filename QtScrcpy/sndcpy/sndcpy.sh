@@ -3,7 +3,7 @@
 echo Begin Runing...
 SNDCPY_PORT=28200
 SNDCPY_APK=sndcpy.apk
-ADB=./adb
+ADB=adb
 
 serial=
 if [[ $# -ge 2 ]]
